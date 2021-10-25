@@ -23,4 +23,3 @@ class Post(BaseModel):
 class Like(BaseModel):
     user = models.ForeignKey(User, on_delete=DO_NOTHING)
     post = models.ForeignKey(Post, on_delete=DO_NOTHING)
-    
