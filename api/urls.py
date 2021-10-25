@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import PostApiView, PostEditApiView
 
 urlpatterns = [
-    path('posts/', views.PostListApiView.as_view(), name='list-posts'),
+    path('posts/', PostApiView.as_view()),
+    path('posts/<int:post_id>/', PostEditApiView.as_view())
 ]

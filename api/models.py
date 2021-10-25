@@ -18,6 +18,8 @@ class BaseModel(models.Model):
 class Post(BaseModel):
     user = models.ForeignKey(User, on_delete=DO_NOTHING)
     body = models.TextField(null=False, blank=False)
+    likes = models.PositiveIntegerField(default=0)
+    user_likes = models.ManyToManyField(User, related_name='user_likes', null=True, blank=True)
 
 
 class Like(BaseModel):

@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import Post
 from .serializers import PostSerializer
 
-class PostListApiView(APIView):
+class PostApiView(APIView):
 
     # 1. List all
     def get(self, request):
@@ -14,7 +14,7 @@ class PostListApiView(APIView):
         '''
         posts = Post.objects.all().order_by('created_at')
         serializer = PostSerializer(posts, many=True)
-        
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     #2. Create New
@@ -30,5 +30,24 @@ class PostListApiView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostEditApiView(APIView):
+
+    #3. Update post
+    def put(self, request, post_id):
+        '''
+        Updates the posts item with given post_id if exists
+        '''
+        post = Post.objects.filter(id=post_id, user = request.user.id).first()
+        data = {
+            'user': request.user.id,
+            'body': request.data.get('body')
+        }
+        serializer = PostSerializer(instance = post, data=data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
