@@ -17,6 +17,7 @@ class PostApiView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
     #2. Create New
     def post(self, request):
         '''
@@ -33,6 +34,8 @@ class PostApiView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
 class PostEditApiView(APIView):
 
     #3. Update post
@@ -41,6 +44,12 @@ class PostEditApiView(APIView):
         Updates the posts item with given post_id if exists
         '''
         post = Post.objects.filter(id=post_id, user = request.user.id).first()
+        if post is None:
+            return Response(
+                {'res': 'Object with requested id does not exists'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         data = {
             'user': request.user.id,
             'body': request.data.get('body')
@@ -51,3 +60,20 @@ class PostEditApiView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    #3. Delete post
+    def delete(self, request, post_id):
+        '''
+        Deletes the posts item with given post_id if exists
+        '''
+        post = Post.objects.filter(id=post_id, user = request.user.id).first()
+        if post is None:
+            return Response(
+                {'res': 'Post with requested id does not exists'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        post.delete()
+
+        return Response({'res': 'Post deleted'}, status=status.HTTP_200_OK)
