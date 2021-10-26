@@ -2,10 +2,13 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.deletion import DO_NOTHING
 
+from django.db.models import signals
+from django.dispatch import receiver
+
 User = get_user_model()
 
 class BaseModel(models.Model):
-    """Provide default fields that are expectedly to be needed by almost all models"""
+    '''Provide default fields that are expectedly to be needed by almost all models'''
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -22,6 +25,8 @@ class Post(BaseModel):
     user_likes = models.ManyToManyField(User, related_name='user_likes', null=True, blank=True)
 
 
-class Like(BaseModel):
-    user = models.ForeignKey(User, on_delete=DO_NOTHING)
-    post = models.ForeignKey(Post, on_delete=DO_NOTHING)
+@receiver(signals.m2m_changed, sender=Post.user_likes.through)
+def update_likes_count(instance, action, pk_set):
+    if action == 'post_add':
+        instance.likes += len(pk_set)
+        instance.save()

@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import Post
 from .serializers import PostSerializer
 
+
 class PostApiView(APIView):
 
     # 1. List all
@@ -35,15 +36,12 @@ class PostApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-class PostEditApiView(APIView):
-
     #3. Update post
     def put(self, request, post_id):
         '''
         Updates the posts item with given post_id if exists
         '''
-        post = Post.objects.filter(id=post_id, user = request.user.id).first()
+        post = Post.objects.filter(id=post_id, user=request.user.id).first()
         if post is None:
             return Response(
                 {'res': 'Object with requested id does not exists'}, 
@@ -54,7 +52,7 @@ class PostEditApiView(APIView):
             'user': request.user.id,
             'body': request.data.get('body')
         }
-        serializer = PostSerializer(instance = post, data=data, partial = True)
+        serializer = PostSerializer(instance=post, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -62,12 +60,12 @@ class PostEditApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    #3. Delete post
+    #4. Delete post
     def delete(self, request, post_id):
         '''
         Deletes the posts item with given post_id if exists
         '''
-        post = Post.objects.filter(id=post_id, user = request.user.id).first()
+        post = Post.objects.filter(id=post_id, user=request.user.id).first()
         if post is None:
             return Response(
                 {'res': 'Post with requested id does not exists'}, 
@@ -77,3 +75,25 @@ class PostEditApiView(APIView):
         post.delete()
 
         return Response({'res': 'Post deleted'}, status=status.HTTP_200_OK)
+
+
+
+class PostSocialApiView(APIView):
+
+    #5. Like post
+    def post(self, request, post_id):
+        '''
+        Add likes to the post if exists
+        '''
+        post = Post.objects.filter(id=post_id).first()
+        if post is None:
+            return Response(
+                {'res': 'Object with requested id does not exists'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        post.user_likes.add(request.user)
+
+        return Response({'res': 'Like added'}, status=status.HTTP_200_OK)
+        
+        
