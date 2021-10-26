@@ -12,7 +12,7 @@
 ### Update post
 > curl -d '{"body": "XXX"}' -H "Content-Type: application/json" -H 'Authorization: Token TOKEN_HERE' -X PUT http://127.0.0.1:8000/api/posts/ID_HERE/
 
-### Dellete post
+### Delete post
 > curl -H "Content-Type: application/json" -H 'Authorization: Token TOKEN_HERE' -X DELETE http://127.0.0.1:8000/api/posts/ID_HERE/
 
 ### Add like
