@@ -26,7 +26,7 @@ class Post(BaseModel):
 
 
 @receiver(signals.m2m_changed, sender=Post.user_likes.through)
-def update_likes_count(instance, action, pk_set):
+def update_likes_count(instance, action, pk_set, **kwargs):
     if action == 'post_add':
         instance.likes += len(pk_set)
         instance.save()
